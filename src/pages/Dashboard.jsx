@@ -61,7 +61,7 @@ function Dashboard() {
         </div>
 
         <div
-          onClick={() => navigate("/result")}
+          onClick={() => navigate("/reports")}
           className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer border-2 border-transparent hover:border-blue-400 transition text-center"
         >
           <div className="text-5xl mb-4">📋</div>

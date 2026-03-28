@@ -11,7 +11,19 @@ function Result() {
     const savedResult = localStorage.getItem('dermiq_result')
     setImage(savedImage)
     if (savedResult) {
-      setResult(JSON.parse(savedResult))
+      const parsed = JSON.parse(savedResult)
+      setResult(parsed)
+
+      // Save to reports history in localStorage
+      const existing = JSON.parse(localStorage.getItem('dermiq_reports') || '[]')
+      existing.unshift({
+        condition: parsed.condition || 'Unknown',
+        severity: parsed.severity || 'low',
+        confidence: parsed.confidence || 80,
+        date: new Date().toLocaleString()
+      })
+      localStorage.setItem('dermiq_reports', JSON.stringify(existing))
+
     } else {
       navigate('/analyze')
     }
@@ -27,13 +39,12 @@ function Result() {
   const routine     = result.routine     || result.recommendation?.advice || []
   const medicines   = result.medicines   || []
 
-  // Fix: details values are direct numbers e.g. 0.82
   const detailItems = details ? [
-    { label: '🔴 Acne Level',    value: typeof details.acne        === 'number' ? details.acne        : details.acne?.confidence },
-    { label: '🟤 Dark Circles',  value: typeof details.dark_circle === 'number' ? details.dark_circle : details.dark_circle?.confidence },
-    { label: '⚫ Pore Size',     value: typeof details.pores       === 'number' ? details.pores       : details.pores?.confidence },
-    { label: '🟡 Skin Spots',    value: typeof details.spot        === 'number' ? details.spot        : details.spot?.confidence },
-    { label: '〰️ Fine Lines',    value: typeof details.wrinkle     === 'number' ? details.wrinkle     : details.wrinkle?.confidence },
+    { label: '🔴 Acne Level',   value: typeof details.acne        === 'number' ? details.acne        : details.acne?.confidence },
+    { label: '🟤 Dark Circles', value: typeof details.dark_circle === 'number' ? details.dark_circle : details.dark_circle?.confidence },
+    { label: '⚫ Pore Size',    value: typeof details.pores       === 'number' ? details.pores       : details.pores?.confidence },
+    { label: '🟡 Skin Spots',   value: typeof details.spot        === 'number' ? details.spot        : details.spot?.confidence },
+    { label: '〰️ Fine Lines',   value: typeof details.wrinkle     === 'number' ? details.wrinkle     : details.wrinkle?.confidence },
   ].filter(item => item.value !== undefined && item.value > 0) : []
 
   return (
@@ -125,7 +136,7 @@ function Result() {
           </div>
         )}
 
-        {/* LOW SEVERITY — routine + medicines */}
+        {/* LOW SEVERITY */}
         {severity === 'low' && routine.length > 0 && (
           <>
             <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
@@ -165,7 +176,7 @@ function Result() {
           </>
         )}
 
-        {/* HIGH SEVERITY — emergency */}
+        {/* HIGH SEVERITY */}
         {severity === 'high' && (
           <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 mb-6 text-center">
             <div className="text-5xl mb-3">⚠️</div>
