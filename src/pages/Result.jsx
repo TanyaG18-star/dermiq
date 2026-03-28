@@ -1,54 +1,58 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { generatePDFReport } from '../services/pdfGenerator'
 
 function Result() {
   const navigate = useNavigate()
   const [image, setImage] = useState(null)
   const [result, setResult] = useState(null)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const savedImage = localStorage.getItem('dermiq_image')
     const savedResult = localStorage.getItem('dermiq_result')
+    const savedUser = JSON.parse(localStorage.getItem('dermiq_user'))
+
     setImage(savedImage)
+    setUser(savedUser)
+
     if (savedResult) {
       const parsed = JSON.parse(savedResult)
       setResult(parsed)
 
-      // Save to reports history in localStorage
       // Save to Reports
-const existing = JSON.parse(localStorage.getItem('dermiq_reports') || '[]')
-const alreadySaved = existing[0]?.date === new Date().toLocaleDateString()
-if (!alreadySaved) {
-  existing.unshift({
-    condition: parsed.condition || 'Unknown',
-    severity: parsed.severity || 'low',
-    confidence: parsed.confidence || 80,
-    date: new Date().toLocaleString()
-  })
-  localStorage.setItem('dermiq_reports', JSON.stringify(existing))
-}
+      const existing = JSON.parse(localStorage.getItem('dermiq_reports') || '[]')
+      const alreadySaved = existing[0]?.date === new Date().toLocaleDateString()
+      if (!alreadySaved) {
+        existing.unshift({
+          condition: parsed.condition || 'Unknown',
+          severity: parsed.severity || 'low',
+          confidence: parsed.confidence || 80,
+          date: new Date().toLocaleString()
+        })
+        localStorage.setItem('dermiq_reports', JSON.stringify(existing))
+      }
 
-// Save to Progress Tracker
-const savedImage = localStorage.getItem('dermiq_image')
-const progressEntries = JSON.parse(localStorage.getItem('dermiq_progress') || '[]')
-const alreadySavedProgress = progressEntries[0]?.date === new Date().toLocaleDateString('en-IN', {
-  day: 'numeric', month: 'long', year: 'numeric'
-})
-if (!alreadySavedProgress && savedImage) {
-  progressEntries.unshift({
-    id: Date.now(),
-    image: savedImage,
-    note: `AI detected: ${parsed.condition || 'Unknown'} with ${parsed.confidence || 80}% confidence`,
-    condition: parsed.condition || 'Unknown',
-    date: new Date().toLocaleDateString('en-IN', {
-      day: 'numeric', month: 'long', year: 'numeric'
-    }),
-    time: new Date().toLocaleTimeString('en-IN', {
-      hour: '2-digit', minute: '2-digit'
-    })
-  })
-  localStorage.setItem('dermiq_progress', JSON.stringify(progressEntries))
-}
+      // Save to Progress Tracker
+      const progressEntries = JSON.parse(localStorage.getItem('dermiq_progress') || '[]')
+      const alreadySavedProgress = progressEntries[0]?.date === new Date().toLocaleDateString('en-IN', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      })
+      if (!alreadySavedProgress && savedImage) {
+        progressEntries.unshift({
+          id: Date.now(),
+          image: savedImage,
+          note: `AI detected: ${parsed.condition || 'Unknown'} with ${parsed.confidence || 80}% confidence`,
+          condition: parsed.condition || 'Unknown',
+          date: new Date().toLocaleDateString('en-IN', {
+            day: 'numeric', month: 'long', year: 'numeric'
+          }),
+          time: new Date().toLocaleTimeString('en-IN', {
+            hour: '2-digit', minute: '2-digit'
+          })
+        })
+        localStorage.setItem('dermiq_progress', JSON.stringify(progressEntries))
+      }
 
     } else {
       navigate('/analyze')
@@ -226,6 +230,13 @@ if (!alreadySavedProgress && savedImage) {
             Always consult a qualified dermatologist for medical advice.
           </p>
         </div>
+
+        {/* PDF DOWNLOAD BUTTON */}
+        <button
+          onClick={() => generatePDFReport(result, image, user)}
+          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition mb-4 flex items-center justify-center gap-2 text-lg">
+          📄 Download PDF Report
+        </button>
 
         <button onClick={() => navigate('/analyze')}
           className="w-full border-2 border-green-500 text-green-600 py-3 rounded-2xl font-bold hover:bg-green-50 transition">
