@@ -9,6 +9,8 @@ import Emergency from './pages/Emergency'
 import ChatBot from './components/ChatBot'
 import RiskScoring from './pages/RiskScoring'
 import Reports from './pages/Reports'
+import Weather from './pages/Weather'
+import ProgressTracker from './pages/ProgressTracker'
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/emergency" element={<Emergency />} />
         <Route path="/risk" element={<RiskScoring />} />
         <Route path="/reports" element={<Reports />} />
+        <Route path="/weather" element={<Weather />} />
+        <Route path="/progress" element={<ProgressTracker />} />
       </Routes>
 
       {/* Chatbot appears on every page */}

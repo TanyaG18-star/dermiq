@@ -15,14 +15,40 @@ function Result() {
       setResult(parsed)
 
       // Save to reports history in localStorage
-      const existing = JSON.parse(localStorage.getItem('dermiq_reports') || '[]')
-      existing.unshift({
-        condition: parsed.condition || 'Unknown',
-        severity: parsed.severity || 'low',
-        confidence: parsed.confidence || 80,
-        date: new Date().toLocaleString()
-      })
-      localStorage.setItem('dermiq_reports', JSON.stringify(existing))
+      // Save to Reports
+const existing = JSON.parse(localStorage.getItem('dermiq_reports') || '[]')
+const alreadySaved = existing[0]?.date === new Date().toLocaleDateString()
+if (!alreadySaved) {
+  existing.unshift({
+    condition: parsed.condition || 'Unknown',
+    severity: parsed.severity || 'low',
+    confidence: parsed.confidence || 80,
+    date: new Date().toLocaleString()
+  })
+  localStorage.setItem('dermiq_reports', JSON.stringify(existing))
+}
+
+// Save to Progress Tracker
+const savedImage = localStorage.getItem('dermiq_image')
+const progressEntries = JSON.parse(localStorage.getItem('dermiq_progress') || '[]')
+const alreadySavedProgress = progressEntries[0]?.date === new Date().toLocaleDateString('en-IN', {
+  day: 'numeric', month: 'long', year: 'numeric'
+})
+if (!alreadySavedProgress && savedImage) {
+  progressEntries.unshift({
+    id: Date.now(),
+    image: savedImage,
+    note: `AI detected: ${parsed.condition || 'Unknown'} with ${parsed.confidence || 80}% confidence`,
+    condition: parsed.condition || 'Unknown',
+    date: new Date().toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }),
+    time: new Date().toLocaleTimeString('en-IN', {
+      hour: '2-digit', minute: '2-digit'
+    })
+  })
+  localStorage.setItem('dermiq_progress', JSON.stringify(progressEntries))
+}
 
     } else {
       navigate('/analyze')

@@ -61,6 +61,32 @@ function Dashboard() {
         </div>
 
         <div
+          onClick={() => navigate("/weather")}
+          className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer border-2 border-transparent hover:border-yellow-400 transition text-center"
+        >
+          <div className="text-5xl mb-4">🌦️</div>
+          <h3 className="text-lg font-bold text-gray-800 mb-1">
+            Weather Advice
+          </h3>
+          <p className="text-gray-500 text-sm">
+            Skin tips based on today's weather
+          </p>
+        </div>
+
+        <div
+          onClick={() => navigate("/progress")}
+          className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer border-2 border-transparent hover:border-purple-400 transition text-center"
+        >
+          <div className="text-5xl mb-4">📸</div>
+          <h3 className="text-lg font-bold text-gray-800 mb-1">
+            Progress Tracker
+          </h3>
+          <p className="text-gray-500 text-sm">
+            Track your skin improvement over time
+          </p>
+        </div>
+
+        <div
           onClick={() => navigate("/reports")}
           className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer border-2 border-transparent hover:border-blue-400 transition text-center"
         >
