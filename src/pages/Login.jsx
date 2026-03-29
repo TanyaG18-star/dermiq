@@ -62,7 +62,7 @@ function Login() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="w-full md:w-1/2 bg-gray-50 flex items-center justify-center p-6 md:p-12">
+        <div className="w-full md:w-1/2 bg-gray-50 flex items-center justify-center p-4 md:p-12 min-h-screen">
         <div className="w-full max-w-md">
 
           <div className="flex items-center gap-2 mb-6">
@@ -71,7 +71,7 @@ function Login() {
             </span>
           </div>
 
-          <h2 className="text-3xl font-extrabold text-gray-800 mb-1">Login to DermIQ 👋</h2>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-1">Login to DermIQ 👋</h2>
           <p className="text-gray-400 mb-8 text-sm">Enter your credentials to continue</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
