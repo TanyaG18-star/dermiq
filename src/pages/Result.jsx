@@ -20,38 +20,44 @@ function Result() {
       const parsed = JSON.parse(savedResult)
       setResult(parsed)
 
-      // Save to Reports
-      const existing = JSON.parse(localStorage.getItem('dermiq_reports') || '[]')
-      const alreadySaved = existing[0]?.date === new Date().toLocaleDateString()
-      if (!alreadySaved) {
-        existing.unshift({
-          condition: parsed.condition || 'Unknown',
-          severity: parsed.severity || 'low',
+      // ── SAVE TO REPORTS (no duplicates) ──
+      const existingReports = JSON.parse(localStorage.getItem('dermiq_reports') || '[]')
+      const reportAlreadySaved = existingReports.some(r =>
+        r.condition === (parsed.condition || 'Unknown') &&
+        r.date === new Date().toLocaleString()
+      )
+      if (!reportAlreadySaved) {
+        existingReports.unshift({
+          condition:  parsed.condition  || 'Unknown',
+          severity:   parsed.severity   || 'low',
           confidence: parsed.confidence || 80,
-          date: new Date().toLocaleString()
+          date:       new Date().toLocaleString()
         })
-        localStorage.setItem('dermiq_reports', JSON.stringify(existing))
+        localStorage.setItem('dermiq_reports', JSON.stringify(existingReports))
       }
 
-      // Save to Progress Tracker
-      const progressEntries = JSON.parse(localStorage.getItem('dermiq_progress') || '[]')
-      const alreadySavedProgress = progressEntries[0]?.date === new Date().toLocaleDateString('en-IN', {
-        day: 'numeric', month: 'long', year: 'numeric'
-      })
-      if (!alreadySavedProgress && savedImage) {
-        progressEntries.unshift({
-          id: Date.now(),
-          image: savedImage,
-          note: `AI detected: ${parsed.condition || 'Unknown'} with ${parsed.confidence || 80}% confidence`,
+      // ── SAVE TO PROGRESS TRACKER (no duplicates) ──
+      const existingProgress = JSON.parse(localStorage.getItem('dermiq_progress') || '[]')
+      const progressAlreadySaved = existingProgress.some(p =>
+        p.condition === (parsed.condition || 'Unknown') &&
+        p.date === new Date().toLocaleDateString('en-IN', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        })
+      )
+      if (!progressAlreadySaved && savedImage) {
+        existingProgress.unshift({
+          id:        Date.now(),
+          image:     savedImage,
+          note:      `AI detected: ${parsed.condition || 'Unknown'} with ${parsed.confidence || 80}% confidence`,
           condition: parsed.condition || 'Unknown',
-          date: new Date().toLocaleDateString('en-IN', {
+          date:      new Date().toLocaleDateString('en-IN', {
             day: 'numeric', month: 'long', year: 'numeric'
           }),
-          time: new Date().toLocaleTimeString('en-IN', {
+          time:      new Date().toLocaleTimeString('en-IN', {
             hour: '2-digit', minute: '2-digit'
           })
         })
-        localStorage.setItem('dermiq_progress', JSON.stringify(progressEntries))
+        localStorage.setItem('dermiq_progress', JSON.stringify(existingProgress))
       }
 
     } else {
@@ -81,7 +87,7 @@ function Result() {
     <div className="min-h-screen bg-green-50">
 
       {/* NAVBAR */}
-      <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+      <div className="bg-white shadow-sm px-4 md:px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <span className="text-2xl">🩺</span>
           <span className="text-xl font-extrabold text-green-600">DermIQ</span>
@@ -92,7 +98,7 @@ function Result() {
         </button>
       </div>
 
-      <div className="max-w-2xl mx-auto px-6 py-10">
+      <div className="max-w-2xl mx-auto px-4 md:px-6 py-10">
 
         <h1 className="text-3xl font-extrabold text-gray-800 mb-6">
           📋 AI Analysis Result
@@ -110,19 +116,19 @@ function Result() {
             ? 'bg-red-50 border-red-300'
             : 'bg-green-50 border-green-300'}`}>
 
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-2xl font-extrabold text-gray-800">
+          <div className="flex justify-between items-start mb-3 gap-2">
+            <h2 className="text-xl md:text-2xl font-extrabold text-gray-800">
               {condition}
             </h2>
-            <span className={`text-sm font-bold px-3 py-1 rounded-full ${
+            <span className={`text-xs font-bold px-3 py-1 rounded-full flex-shrink-0 ${
               severity === 'high'
                 ? 'bg-red-100 text-red-600'
                 : 'bg-green-100 text-green-600'}`}>
-              {severity === 'high' ? '🔴 High Severity' : '🟢 Low Severity'}
+              {severity === 'high' ? '🔴 High' : '🟢 Low'}
             </span>
           </div>
 
-          <p className="text-gray-600 mb-4">{description}</p>
+          <p className="text-gray-600 mb-4 text-sm md:text-base">{description}</p>
 
           {/* CONFIDENCE BAR */}
           <div className="mb-2 flex justify-between">
@@ -179,7 +185,7 @@ function Result() {
                     <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full min-w-fit">
                       Step {i + 1}
                     </span>
-                    <span>{step}</span>
+                    <span className="text-sm">{step}</span>
                   </li>
                 ))}
               </ul>
@@ -196,7 +202,7 @@ function Result() {
                 <ul className="space-y-3">
                   {medicines.map((med, i) => (
                     <li key={i}
-                      className="flex items-center gap-3 text-gray-600 bg-blue-50 rounded-xl px-4 py-3">
+                      className="flex items-center gap-3 text-gray-600 bg-blue-50 rounded-xl px-4 py-3 text-sm">
                       {med}
                     </li>
                   ))}
@@ -213,7 +219,7 @@ function Result() {
             <h3 className="font-extrabold text-red-700 text-xl mb-2">
               Immediate Medical Attention Required!
             </h3>
-            <p className="text-red-500 mb-4">
+            <p className="text-red-500 mb-4 text-sm">
               This condition requires professional dermatologist consultation.
             </p>
             <button onClick={() => navigate('/emergency')}
@@ -231,7 +237,7 @@ function Result() {
           </p>
         </div>
 
-        {/* PDF DOWNLOAD BUTTON */}
+        {/* PDF DOWNLOAD */}
         <button
           onClick={() => generatePDFReport(result, image, user)}
           className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition mb-4 flex items-center justify-center gap-2 text-lg">

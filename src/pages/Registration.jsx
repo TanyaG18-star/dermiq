@@ -31,7 +31,7 @@ function Registration() {
     setStep(2)
   }
 
-  const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (passwordErrors.length > 0) {
@@ -49,7 +49,25 @@ function Registration() {
         alert(result.message)
       }
     } catch (error) {
-      alert('Server error! Make sure backend is running.')
+      // ── FALLBACK: backend is down — save to localStorage ──
+      const existing = JSON.parse(localStorage.getItem('dermiq_user') || 'null')
+      if (existing && existing.email === formData.email) {
+        alert('⚠️ This email is already registered!')
+        return
+      }
+      const localUser = {
+        id: Date.now(),
+        fullName: formData.fullName,
+        age: formData.age,
+        gender: formData.gender,
+        contact: formData.contact,
+        email: formData.email,
+        city: formData.city,
+        password: formData.password
+      }
+      localStorage.setItem('dermiq_user', JSON.stringify(localUser))
+      alert('Registration Successful! 🎉 (Offline mode)')
+      navigate('/login')
     }
   }
 
