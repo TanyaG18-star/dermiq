@@ -5,11 +5,12 @@ from database.db import db
 from models.report_model import Report
 from services.risk_engine import calculate_risk
 from services.recommendation_engine import get_recommendation
+from services.ml_engine import predict_skin_condition
 
 analysis = Blueprint('analysis', __name__)
 
 # ─────────────────────────────
-# SMART AI ENGINE
+# SMART AI ENGINE (context enrichment)
 # ─────────────────────────────
 
 def analyze_skin_smart(image_base64, age, gender, city):
@@ -314,7 +315,7 @@ def analyze_skin_smart(image_base64, age, gender, city):
 
 
 # ─────────────────────────────
-# POST /analyze
+# POST /analyze  ← ML POWERED
 # ─────────────────────────────
 @analysis.route('/analyze', methods=['POST'])
 def analyze():
@@ -330,32 +331,38 @@ def analyze():
 
         print(f"🔍 Analyzing for: Age={age}, Gender={gender}, City={city}")
 
-        result = analyze_skin_smart(image_base64, age, gender, city)
+        # ── Step 1: Try ML model first ──
+        ml_result = predict_skin_condition(image_base64)
 
-        print(f"✅ Result: {result['condition']} | Severity: {result['severity']}")
+        if ml_result:
+            condition  = ml_result['condition']
+            confidence = ml_result['confidence']
+            print(f"🤖 ML Model used: {condition} ({confidence}%)")
+        else:
+            # ── Step 2: Fallback to rule-based if ML fails ──
+            fallback   = analyze_skin_smart(image_base64, age, gender, city)
+            condition  = fallback['condition']
+            confidence = fallback['confidence']
+            print(f"⚠️ Fallback used: {condition}")
+
+        # ── Step 3: Always enrich with age/gender/city context ──
+        context = analyze_skin_smart(image_base64, age, gender, city)
 
         return jsonify({
             'success'    : True,
-            'condition'  : result['condition'],
-            'severity'   : result['severity'],
-            'confidence' : result['confidence'],
-            'description': result['description'],
-            'details'    : result.get('details', {}),
-            'routine'    : result.get('routine', []),
-            'medicines'  : result.get('medicines', []),
+            'condition'  : condition,
+            'severity'   : context['severity'],
+            'confidence' : confidence,
+            'description': context['description'],
+            'details'    : context.get('details', {}),
+            'routine'    : context.get('routine', []),
+            'medicines'  : context.get('medicines', []),
+            'ml_used'    : ml_result is not None,
         }), 200
 
     except Exception as e:
-        print("❌ Error:", str(e))
-        return jsonify({
-            'success'    : True,
-            'condition'  : 'Mild Acne',
-            'severity'   : 'low',
-            'confidence' : 84,
-            'description': 'Minor acne detected.',
-            'routine'    : ['🧴 Wash face twice daily', '💧 Moisturize daily', '☀️ Use SPF 30'],
-            'medicines'  : ['💊 Salicylic Acid face wash'],
-        }), 200
+        print(f"❌ Error: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 # ─────────────────────────────
