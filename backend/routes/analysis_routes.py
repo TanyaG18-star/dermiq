@@ -31,7 +31,7 @@ ML_CONDITION_MAP = {
     },
     'Eczema': {
         'description': 'Eczema detected. Skin shows signs of inflammation, dryness and irritation.',
-        'details': {'acne': 0.20, 'pores': 0.30, 'wrinkle': 0.45},
+        'details': {'dryness': 0.80, 'inflammation': 0.70, 'irritation': 0.65},
         'routine': [
             '💧 Moisturize with thick cream immediately after bathing',
             '🚿 Use lukewarm water only — never hot',
@@ -48,7 +48,8 @@ ML_CONDITION_MAP = {
     },
     'Melanoma': {
         'description': '⚠️ Melanoma risk detected. Please consult a dermatologist immediately for proper diagnosis.',
-        'details': {'spot': 0.90, 'wrinkle': 0.50, 'dark_circle': 0.40},
+        'details': {'lesion': 0.90, 'pigmentation': 0.75, 'spot': 0.60},
+
         'routine': [
             '🏥 See a dermatologist IMMEDIATELY',
             '☀️ Apply SPF 50+ sunscreen every 2 hours',
@@ -64,7 +65,8 @@ ML_CONDITION_MAP = {
     },
     'Psoriasis': {
         'description': 'Psoriasis detected. Skin shows signs of rapid cell buildup causing scales and inflammation.',
-        'details': {'acne': 0.30, 'spot': 0.60, 'wrinkle': 0.50},
+        'details': {'scaling': 0.80, 'inflammation': 0.75, 'redness': 0.60},
+
         'routine': [
             '💧 Moisturize heavily twice daily',
             '🛁 Take short lukewarm baths with oatmeal',
@@ -80,8 +82,8 @@ ML_CONDITION_MAP = {
         ]
     },
     'Rosacea': {
-        'description': 'Rosacea detected. Facial redness, visible blood vessels and sensitivity detected.',
-        'details': {'acne': 0.45, 'spot': 0.55, 'wrinkle': 0.40},
+    'description': 'Rosacea detected. Facial redness, visible blood vessels and sensitivity detected.',
+    'details': {'redness': 0.75, 'sensitivity': 0.80, 'vessels': 0.60},
         'routine': [
             '🧴 Use gentle fragrance-free cleanser only',
             '☀️ SPF 50+ mineral sunscreen every day',
@@ -98,7 +100,7 @@ ML_CONDITION_MAP = {
     },
     'Normal Skin': {
         'description': 'Skin appears healthy with no major conditions detected. Maintain your current routine.',
-        'details': {'acne': 0.10, 'pores': 0.20, 'dark_circle': 0.15},
+        'details': {'acne': 0.10, 'pores': 0.20, 'spot': 0.15},
         'routine': [
             '🧴 Maintain basic CTM routine daily',
             '💧 Moisturize twice daily',
@@ -115,7 +117,8 @@ ML_CONDITION_MAP = {
     },
     'Hyperpigmentation': {
         'description': 'Hyperpigmentation detected. Dark patches caused by excess melanin production.',
-        'details': {'spot': 0.85, 'wrinkle': 0.40, 'dark_circle': 0.55},
+        'details': {'pigmentation': 0.85, 'spot': 0.70, 'dark_circle': 0.55},
+
         'routine': [
             '☀️ SPF 50+ sunscreen every 2 hours — most important step',
             '🌟 Apply Vitamin C serum every morning',
@@ -133,7 +136,7 @@ ML_CONDITION_MAP = {
     },
     'Fungal Infection': {
         'description': 'Fungal skin infection detected. Common in humid conditions and caused by fungal overgrowth.',
-        'details': {'acne': 0.70, 'pores': 0.55, 'spot': 0.35},
+        'details': {'fungal': 0.80, 'acne': 0.50, 'oil': 0.60},
         'routine': [
             '🧴 Use antifungal face wash or soap daily',
             '💧 Keep skin dry — pat dry after washing',
