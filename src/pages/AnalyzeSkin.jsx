@@ -150,16 +150,20 @@ function AnalyzeSkin() {
 
   // ─── FILE UPLOAD ───
   const handleImageUpload = (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop())
-      streamRef.current = null
-      setCameraOn(false)
-    }
-    setPreview(URL.createObjectURL(file))
+  const file = e.target.files[0]
+  if (!file) return
+  if (streamRef.current) {
+    streamRef.current.getTracks().forEach(t => t.stop())
+    streamRef.current = null
+    setCameraOn(false)
   }
-
+  // Convert to base64 instead of blob URL
+  const reader = new FileReader()
+  reader.onloadend = () => {
+    setPreview(reader.result)  // reader.result is base64
+  }
+  reader.readAsDataURL(file)
+}
   // ─── OPEN CAMERA ───
   const handleOpenCamera = async () => {
     try {
@@ -278,11 +282,26 @@ function AnalyzeSkin() {
 
   // ─── PROCESS ───
   const handleProcess = () => {
-    if (!preview) return
-    localStorage.setItem('dermiq_image', preview)
+  if (!preview) return
+
+  // Compress image before saving to localStorage
+  const img = new Image()
+  img.onload = () => {
+    const canvas = document.createElement('canvas')
+    // Resize to max 800px wide
+    const maxWidth = 800
+    const scale = Math.min(1, maxWidth / img.width)
+    canvas.width = img.width * scale
+    canvas.height = img.height * scale
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    // Compress to JPEG 70% quality
+    const compressed = canvas.toDataURL('image/jpeg', 0.7)
+    localStorage.setItem('dermiq_image', compressed)
     navigate('/processing')
   }
-
+  img.src = preview
+}
   // ─── QUALITY ROW DATA ───
   const checks = [
     {
