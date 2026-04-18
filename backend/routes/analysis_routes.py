@@ -8,6 +8,147 @@ from services.recommendation_engine import get_recommendation
 from services.ml_engine import predict_skin_condition
 
 analysis = Blueprint('analysis', __name__)
+# ─────────────────────────────
+# ML CONDITION → CONTEXT MAP
+# ─────────────────────────────
+ML_CONDITION_MAP = {
+    'Acne': {
+        'description': 'Acne detected on skin surface. Caused by clogged pores, bacteria and excess sebum.',
+        'details': {'acne': 0.85, 'pores': 0.60, 'spot': 0.40},
+        'routine': [
+            '🧴 Use salicylic acid face wash twice daily',
+            '💧 Apply oil-free moisturizer only',
+            '☀️ Use SPF 30+ sunscreen every morning',
+            '🚫 Never pop or squeeze pimples',
+            '😴 Sleep 8 hours daily to balance hormones',
+            '🥗 Reduce dairy and sugar intake',
+        ],
+        'medicines': [
+            '💊 Salicylic Acid 2% face wash',
+            '💊 Benzoyl Peroxide 2.5% gel (night)',
+            '💊 Niacinamide 10% serum',
+        ]
+    },
+    'Eczema': {
+        'description': 'Eczema detected. Skin shows signs of inflammation, dryness and irritation.',
+        'details': {'acne': 0.20, 'pores': 0.30, 'wrinkle': 0.45},
+        'routine': [
+            '💧 Moisturize with thick cream immediately after bathing',
+            '🚿 Use lukewarm water only — never hot',
+            '🧴 Use fragrance-free gentle cleanser',
+            '🚫 Avoid wool and synthetic fabrics',
+            '🥗 Identify and avoid food triggers',
+            '💨 Use a humidifier indoors',
+        ],
+        'medicines': [
+            '💊 Ceramide moisturizing cream (CeraVe)',
+            '💊 Hydrocortisone 1% cream for flare-ups',
+            '💊 Antihistamine tablet for itching',
+        ]
+    },
+    'Melanoma': {
+        'description': '⚠️ Melanoma risk detected. Please consult a dermatologist immediately for proper diagnosis.',
+        'details': {'spot': 0.90, 'wrinkle': 0.50, 'dark_circle': 0.40},
+        'routine': [
+            '🏥 See a dermatologist IMMEDIATELY',
+            '☀️ Apply SPF 50+ sunscreen every 2 hours',
+            '🚫 Avoid all sun exposure until checked',
+            '📸 Document the affected area with photos',
+            '🚫 Do not apply any home remedies',
+        ],
+        'medicines': [
+            '⚠️ Do not self-medicate',
+            '🏥 Requires professional medical diagnosis',
+            '💊 SPF 50+ mineral sunscreen only',
+        ]
+    },
+    'Psoriasis': {
+        'description': 'Psoriasis detected. Skin shows signs of rapid cell buildup causing scales and inflammation.',
+        'details': {'acne': 0.30, 'spot': 0.60, 'wrinkle': 0.50},
+        'routine': [
+            '💧 Moisturize heavily twice daily',
+            '🛁 Take short lukewarm baths with oatmeal',
+            '☀️ Controlled sunlight exposure (10-15 mins daily)',
+            '🚫 Avoid skin injuries and scratching',
+            '😴 Manage stress — it triggers flare-ups',
+            '🥗 Eat anti-inflammatory foods',
+        ],
+        'medicines': [
+            '💊 Coal tar shampoo/cream',
+            '💊 Salicylic acid cream for scaling',
+            '💊 Consult doctor for prescription retinoids',
+        ]
+    },
+    'Rosacea': {
+        'description': 'Rosacea detected. Facial redness, visible blood vessels and sensitivity detected.',
+        'details': {'acne': 0.45, 'spot': 0.55, 'wrinkle': 0.40},
+        'routine': [
+            '🧴 Use gentle fragrance-free cleanser only',
+            '☀️ SPF 50+ mineral sunscreen every day',
+            '🚫 Avoid spicy food, alcohol and hot drinks',
+            '🌡️ Avoid extreme temperatures',
+            '💧 Use calming moisturizer with ceramides',
+            '😴 Identify and avoid personal triggers',
+        ],
+        'medicines': [
+            '💊 Azelaic acid 15% gel',
+            '💊 Metronidazole 0.75% cream (prescription)',
+            '💊 Mineral SPF 50+ sunscreen',
+        ]
+    },
+    'Normal Skin': {
+        'description': 'Skin appears healthy with no major conditions detected. Maintain your current routine.',
+        'details': {'acne': 0.10, 'pores': 0.20, 'dark_circle': 0.15},
+        'routine': [
+            '🧴 Maintain basic CTM routine daily',
+            '💧 Moisturize twice daily',
+            '☀️ Apply SPF 30 sunscreen every morning',
+            '💧 Drink 2-3 litres of water daily',
+            '🥗 Eat a balanced diet rich in antioxidants',
+            '😴 Sleep 7-8 hours every night',
+        ],
+        'medicines': [
+            '💊 Basic SPF 30 moisturizer',
+            '💊 Gentle face wash',
+            '💊 Vitamin C serum (optional, for glow)',
+        ]
+    },
+    'Hyperpigmentation': {
+        'description': 'Hyperpigmentation detected. Dark patches caused by excess melanin production.',
+        'details': {'spot': 0.85, 'wrinkle': 0.40, 'dark_circle': 0.55},
+        'routine': [
+            '☀️ SPF 50+ sunscreen every 2 hours — most important step',
+            '🌟 Apply Vitamin C serum every morning',
+            '💧 Use Alpha Arbutin serum for dark spots',
+            '🍋 Apply retinol at night for cell turnover',
+            '🚫 Never pick or scratch dark spots',
+            '🥗 Eat Vitamin C rich foods daily',
+        ],
+        'medicines': [
+            '💊 Vitamin C 15-20% serum (morning)',
+            '💊 Alpha Arbutin 2% serum',
+            '💊 Kojic Acid cream',
+            '💊 Retinol 0.5% serum (night)',
+        ]
+    },
+    'Fungal Infection': {
+        'description': 'Fungal skin infection detected. Common in humid conditions and caused by fungal overgrowth.',
+        'details': {'acne': 0.70, 'pores': 0.55, 'spot': 0.35},
+        'routine': [
+            '🧴 Use antifungal face wash or soap daily',
+            '💧 Keep skin dry — pat dry after washing',
+            '👕 Wear breathable cotton clothing',
+            '🚿 Shower after sweating immediately',
+            '🚫 Do not share towels or clothing',
+            '💨 Keep affected area ventilated',
+        ],
+        'medicines': [
+            '💊 Ketoconazole 2% face wash or cream',
+            '💊 Clotrimazole 1% cream (apply twice daily)',
+            '💊 Zinc pyrithione soap',
+        ]
+    },
+}
 
 # ─────────────────────────────
 # SMART AI ENGINE (context enrichment)
@@ -348,18 +489,26 @@ def analyze():
         # ── Step 3: Always enrich with age/gender/city context ──
         context = analyze_skin_smart(image_base64, age, gender, city)
 
+        # Get ML-specific context if available
+        ml_context  = ML_CONDITION_MAP.get(condition, None)
+        age_context = analyze_skin_smart(image_base64, age, gender, city)
+
+        final_description = ml_context['description'] if ml_context else age_context['description']
+        final_details     = ml_context['details']     if ml_context else age_context.get('details', {})
+        final_routine     = ml_context['routine']     if ml_context else age_context.get('routine', [])
+        final_medicines   = ml_context['medicines']   if ml_context else age_context.get('medicines', [])
+
         return jsonify({
             'success'    : True,
             'condition'  : condition,
-            'severity'   : context['severity'],
+            'severity'   : age_context['severity'],
             'confidence' : confidence,
-            'description': context['description'],
-            'details'    : context.get('details', {}),
-            'routine'    : context.get('routine', []),
-            'medicines'  : context.get('medicines', []),
+            'description': final_description,
+            'details'    : final_details,
+            'routine'    : final_routine,
+            'medicines'  : final_medicines,
             'ml_used'    : ml_result is not None,
         }), 200
-
     except Exception as e:
         print(f"❌ Error: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
