@@ -102,7 +102,7 @@ function Registration() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="w-full md:w-1/2 bg-green-50 flex items-center justify-center p-6 md:p-12">
+        <div className="w-full md:w-1/2 bg-green-50 flex items-center justify-center p-4 md:p-12 min-h-screen">
         <div className="w-full max-w-md">
 
           <div className="flex items-center gap-2 mb-6">
@@ -112,7 +112,7 @@ function Registration() {
             </span>
           </div>
 
-          <h2 className="text-3xl font-extrabold text-gray-800 mb-1">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-1">
             {step === 1 ? 'Personal Info 👤' : 'Account Setup 🔐'}
           </h2>
           <p className="text-gray-500 mb-6 text-sm">

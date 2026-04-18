@@ -45,13 +45,37 @@ def load_model():
     return model
 
 def preprocess_image(image_base64):
-    image_data = base64.b64decode(image_base64)
-    image = Image.open(io.BytesIO(image_data)).convert('RGB')
-    image = image.resize((224, 224))
-    img_array = np.array(image, dtype=np.float32)
-    img_array = preprocess_input(img_array)
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
+    try:
+        # Step 1: Remove data URL prefix if present
+        if ',' in image_base64:
+            image_base64 = image_base64.split(',')[1]
+
+        # Step 2: Clean whitespace and newlines
+        image_base64 = image_base64.strip().replace('\n', '').replace('\r', '').replace(' ', '')
+
+        # Step 3: Fix base64 padding
+        missing_padding = len(image_base64) % 4
+        if missing_padding:
+            image_base64 += '=' * (4 - missing_padding)
+
+        # Step 4: Decode base64 to bytes
+        image_data = base64.b64decode(image_base64)
+
+        # Step 5: Open image
+        image = Image.open(io.BytesIO(image_data)).convert('RGB')
+        image = image.resize((224, 224))
+
+        # Step 6: Convert to numpy array
+        img_array = np.array(image, dtype=np.float32)
+        img_array = preprocess_input(img_array)
+        img_array = np.expand_dims(img_array, axis=0)
+        return img_array
+
+    except Exception as e:
+        print(f"❌ Preprocess Error: {e}")
+        print(f"❌ Base64 length: {len(image_base64)}")
+        print(f"❌ First 100 chars: {image_base64[:100]}")
+        raise
 
 def predict_skin_condition(image_base64):
     try:
