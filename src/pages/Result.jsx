@@ -75,13 +75,35 @@ function Result() {
   const routine     = result.routine     || result.recommendation?.advice || []
   const medicines   = result.medicines   || []
 
-  const detailItems = details ? [
-    { label: '🔴 Acne Level',   value: typeof details.acne        === 'number' ? details.acne        : details.acne?.confidence },
-    { label: '🟤 Dark Circles', value: typeof details.dark_circle === 'number' ? details.dark_circle : details.dark_circle?.confidence },
-    { label: '⚫ Pore Size',    value: typeof details.pores       === 'number' ? details.pores       : details.pores?.confidence },
-    { label: '🟡 Skin Spots',   value: typeof details.spot        === 'number' ? details.spot        : details.spot?.confidence },
-    { label: '〰️ Fine Lines',   value: typeof details.wrinkle     === 'number' ? details.wrinkle     : details.wrinkle?.confidence },
-  ].filter(item => item.value !== undefined && item.value > 0) : []
+  // ── Dynamic label map — covers all possible detail keys ──
+  const DETAIL_LABEL_MAP = {
+    acne:         { label: '🔴 Acne Level',         color: 'bg-red-400' },
+    dark_circle:  { label: '🟤 Dark Circles',        color: 'bg-purple-400' },
+    pores:        { label: '⚫ Pore Size',           color: 'bg-gray-500' },
+    spot:         { label: '🟡 Skin Spots',          color: 'bg-yellow-400' },
+    wrinkle:      { label: '〰️ Fine Lines',          color: 'bg-pink-400' },
+    redness:      { label: '🔴 Redness Level',       color: 'bg-red-500' },
+    sensitivity:  { label: '🌡️ Skin Sensitivity',   color: 'bg-orange-400' },
+    vessels:      { label: '🩸 Visible Vessels',     color: 'bg-red-300' },
+    dryness:      { label: '🏜️ Dryness Level',      color: 'bg-yellow-600' },
+    inflammation: { label: '🔥 Inflammation',        color: 'bg-orange-500' },
+    irritation:   { label: '⚡ Irritation',          color: 'bg-yellow-500' },
+    fungal:       { label: '🍄 Fungal Risk',         color: 'bg-green-600' },
+    pigmentation: { label: '🟫 Pigmentation',        color: 'bg-amber-600' },
+    lesion:       { label: '⚠️ Lesion Risk',         color: 'bg-red-600' },
+    oil:          { label: '💧 Oil Level',           color: 'bg-blue-400' },
+    scaling:      { label: '❄️ Scaling',            color: 'bg-blue-300' },
+  }
+
+  const detailItems = details ? Object.entries(details)
+    .filter(([key, value]) => value !== undefined && value > 0)
+    .map(([key, value]) => ({
+      label: DETAIL_LABEL_MAP[key]?.label || key,
+      color: DETAIL_LABEL_MAP[key]?.color || 'bg-emerald-500',
+      value: typeof value === 'number' ? value : value?.confidence
+    }))
+    .filter(item => item.value !== undefined && item.value > 0)
+  : []
 
   return (
     <div className="min-h-screen bg-green-50">
@@ -151,7 +173,7 @@ function Result() {
               🔍 Detailed Skin Analysis
             </h3>
             <p className="text-gray-400 text-xs mb-4">
-              Based on your age, gender and city climate
+              Based on ML skin condition detection
             </p>
             <div className="grid grid-cols-2 gap-3">
               {detailItems.map((item, i) => (
@@ -159,7 +181,7 @@ function Result() {
                   <p className="text-xs text-gray-500 mb-2 font-medium">{item.label}</p>
                   <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
                     <div
-                      className="h-2 rounded-full bg-emerald-500 transition-all duration-700"
+                      className={`h-2 rounded-full transition-all duration-700 ${item.color}`}
                       style={{ width: `${Math.round(item.value * 100)}%` }}>
                     </div>
                   </div>
