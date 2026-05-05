@@ -28,7 +28,7 @@ function Login() {
       const savedUser = JSON.parse(localStorage.getItem('dermiq_user'))
       if (!savedUser) { setError('⚠️ No account found! Please register first.'); return }
       if (savedUser.email !== formData.email) { setError('❌ Email not found!'); return }
-      if (savedUser.password !== formData.password) { setError('❌ Wrong password!'); return }
+      if (savedUser.password !== hashPassword(formData.password)) { setError('❌ Wrong password!'); return }
       localStorage.setItem('dermiq_loggedin', 'true')
       navigate('/dashboard')
     }

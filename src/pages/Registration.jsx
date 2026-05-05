@@ -2,6 +2,16 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { registerUser } from '../services/api'
 
+const hashPassword = (password) => {
+  let hash = 0
+  for (let i = 0; i < password.length; i++) {
+    const char = password.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return 'hashed_' + Math.abs(hash).toString(16)
+}
+
 function Registration() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
@@ -63,7 +73,7 @@ function Registration() {
         contact: formData.contact,
         email: formData.email,
         city: formData.city,
-        password: formData.password
+        password: hashPassword(formData.password)
       }
       localStorage.setItem('dermiq_user', JSON.stringify(localUser))
       alert('Registration Successful! 🎉 (Offline mode)')
