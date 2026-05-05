@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const API_KEY = '2c9c41b6640ada8a034db74d536ec2b0'
-
-function Weather() {
+  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY
+  
   const navigate = useNavigate()
   const [weather, setWeather] = useState(null)
   const [loading, setLoading] = useState(true)
