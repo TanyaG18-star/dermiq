@@ -50,6 +50,7 @@ function ChatBot() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          system: SYSTEM_PROMPT,
           messages: updatedMessages.map(m => ({
             role: m.role,
             content: m.content
