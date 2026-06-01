@@ -13,42 +13,8 @@ analysis = Blueprint('analysis', __name__)
 # ML CONDITION → CONTEXT MAP
 # ─────────────────────────────────────
 ML_CONDITION_MAP = {
-    'Acne': {
-        'description': 'Acne detected on skin surface. Caused by clogged pores, bacteria and excess sebum.',
-        'details': {'acne': 0.85, 'pores': 0.60, 'oil': 0.70},
-        'routine': [
-            '🧴 Use salicylic acid face wash twice daily',
-            '💧 Apply oil-free moisturizer only',
-            '☀️ Use SPF 30+ sunscreen every morning',
-            '🚫 Never pop or squeeze pimples',
-            '😴 Sleep 8 hours daily to balance hormones',
-            '🥗 Reduce dairy and sugar intake',
-        ],
-        'medicines': [
-            '💊 Salicylic Acid 2% face wash',
-            '💊 Benzoyl Peroxide 2.5% gel (night)',
-            '💊 Niacinamide 10% serum',
-        ]
-    },
-    'Eczema': {
-        'description': 'Eczema detected. Skin shows signs of inflammation, dryness and irritation.',
-        'details': {'dryness': 0.80, 'inflammation': 0.70, 'irritation': 0.65},
-        'routine': [
-            '💧 Moisturize with thick cream immediately after bathing',
-            '🚿 Use lukewarm water only — never hot',
-            '🧴 Use fragrance-free gentle cleanser',
-            '🚫 Avoid wool and synthetic fabrics',
-            '🥗 Identify and avoid food triggers',
-            '💨 Use a humidifier indoors',
-        ],
-        'medicines': [
-            '💊 Ceramide moisturizing cream (CeraVe)',
-            '💊 Hydrocortisone 1% cream for flare-ups',
-            '💊 Antihistamine tablet for itching',
-        ]
-    },
     'Melanoma': {
-        'description': '⚠️ Melanoma risk detected. Please consult a dermatologist immediately for proper diagnosis.',
+        'description': '⚠️ Melanoma risk detected. Please consult a dermatologist immediately.',
         'details': {'lesion': 0.90, 'pigmentation': 0.75, 'spot': 0.60},
         'routine': [
             '🏥 See a dermatologist IMMEDIATELY',
@@ -63,90 +29,100 @@ ML_CONDITION_MAP = {
             '💊 SPF 50+ mineral sunscreen only',
         ]
     },
-    'Psoriasis': {
-        'description': 'Psoriasis detected. Skin shows signs of rapid cell buildup causing scales and inflammation.',
-        'details': {'scaling': 0.80, 'inflammation': 0.75, 'redness': 0.60},
+    'Melanocytic Nevi': {
+        'description': 'Melanocytic Nevi (moles) detected. Usually benign but monitor for changes.',
+        'details': {'spot': 0.70, 'pigmentation': 0.60, 'lesion': 0.30},
         'routine': [
-            '💧 Moisturize heavily twice daily',
-            '🛁 Take short lukewarm baths with oatmeal',
-            '☀️ Controlled sunlight exposure (10-15 mins daily)',
-            '🚫 Avoid skin injuries and scratching',
-            '😴 Manage stress — it triggers flare-ups',
-            '🥗 Eat anti-inflammatory foods',
+            '👁️ Monitor moles for any size or color changes',
+            '☀️ Apply SPF 50+ sunscreen daily',
+            '📸 Photograph moles monthly to track changes',
+            '🏥 Annual dermatologist checkup recommended',
+            '🚫 Never scratch or irritate moles',
         ],
         'medicines': [
-            '💊 Coal tar shampoo/cream',
-            '💊 Salicylic acid cream for scaling',
-            '💊 Consult doctor for prescription retinoids',
+            '💊 SPF 50+ mineral sunscreen',
+            '💊 No treatment needed unless changes occur',
+            '🏥 Consult doctor if mole changes shape or color',
         ]
     },
-    'Rosacea': {
-        'description': 'Rosacea detected. Facial redness, visible blood vessels and sensitivity detected.',
-        'details': {'redness': 0.75, 'sensitivity': 0.80, 'vessels': 0.60},
+    'Basal Cell Carcinoma': {
+        'description': '⚠️ Basal Cell Carcinoma signs detected. Most common skin cancer — highly treatable if caught early.',
+        'details': {'lesion': 0.85, 'spot': 0.65, 'vessels': 0.50},
         'routine': [
-            '🧴 Use gentle fragrance-free cleanser only',
-            '☀️ SPF 50+ mineral sunscreen every day',
-            '🚫 Avoid spicy food, alcohol and hot drinks',
-            '🌡️ Avoid extreme temperatures',
-            '💧 Use calming moisturizer with ceramides',
-            '😴 Identify and avoid personal triggers',
+            '🏥 See a dermatologist IMMEDIATELY',
+            '☀️ Apply SPF 50+ sunscreen every 2 hours',
+            '🚫 Avoid sun exposure especially 11am-4pm',
+            '📸 Document affected area with photos',
+            '🚫 Do not attempt home treatment',
         ],
         'medicines': [
-            '💊 Azelaic acid 15% gel',
-            '💊 Metronidazole 0.75% cream (prescription)',
-            '💊 Mineral SPF 50+ sunscreen',
+            '⚠️ Requires medical diagnosis and treatment',
+            '💊 SPF 50+ mineral sunscreen',
+            '🏥 Treatment decided by dermatologist',
         ]
     },
-    'Normal Skin': {
-        'description': 'Skin appears healthy with no major conditions detected. Maintain your current routine.',
-        'details': {'acne': 0.10, 'pores': 0.20, 'spot': 0.15},
+    'Actinic Keratosis': {
+        'description': 'Actinic Keratosis detected. Rough scaly patches caused by sun damage — pre-cancerous, needs attention.',
+        'details': {'scaling': 0.75, 'redness': 0.65, 'spot': 0.55},
         'routine': [
-            '🧴 Maintain basic CTM routine daily',
-            '💧 Moisturize twice daily',
-            '☀️ Apply SPF 30 sunscreen every morning',
-            '💧 Drink 2-3 litres of water daily',
-            '🥗 Eat a balanced diet rich in antioxidants',
-            '😴 Sleep 7-8 hours every night',
+            '🏥 Consult a dermatologist soon',
+            '☀️ Apply SPF 50+ sunscreen every 2 hours',
+            '🚫 Avoid prolonged sun exposure',
+            '🧴 Use gentle moisturizer on affected areas',
+            '📸 Monitor and document changes',
         ],
         'medicines': [
+            '💊 SPF 50+ sunscreen (most important)',
+            '💊 Prescription topical treatments by doctor',
+            '🏥 Do not self-medicate',
+        ]
+    },
+    'Benign Keratosis': {
+        'description': 'Benign Keratosis detected. Non-cancerous skin growths — harmless but can be cosmetically treated.',
+        'details': {'scaling': 0.70, 'pigmentation': 0.60, 'spot': 0.50},
+        'routine': [
+            '🧴 Keep skin moisturized daily',
+            '☀️ Use SPF 30+ sunscreen every morning',
+            '🚫 Do not pick or scratch growths',
+            '💧 Drink 8 glasses of water daily',
+            '🏥 Optional cosmetic removal by dermatologist',
+        ],
+        'medicines': [
+            '💊 Gentle moisturizing cream',
+            '💊 SPF 30+ sunscreen',
+            '🏥 Consult doctor for removal options',
+        ]
+    },
+    'Dermatofibroma': {
+        'description': 'Dermatofibroma detected. Harmless skin nodules — common and benign.',
+        'details': {'spot': 0.65, 'lesion': 0.45, 'inflammation': 0.30},
+        'routine': [
+            '✅ Generally harmless — no treatment needed',
+            '🧴 Keep skin moisturized',
+            '☀️ Apply SPF 30+ sunscreen daily',
+            '🚫 Do not pick or scratch',
+            '🏥 See doctor if painful or growing fast',
+        ],
+        'medicines': [
+            '💊 No treatment usually needed',
             '💊 Basic SPF 30 moisturizer',
-            '💊 Gentle face wash',
-            '💊 Vitamin C serum (optional, for glow)',
+            '🏥 Surgical removal if desired — consult doctor',
         ]
     },
-    'Hyperpigmentation': {
-        'description': 'Hyperpigmentation detected. Dark patches caused by excess melanin production.',
-        'details': {'pigmentation': 0.85, 'spot': 0.70, 'dark_circle': 0.55},
+    'Vascular Lesion': {
+        'description': 'Vascular Lesion detected. Blood vessel abnormalities in skin — usually benign.',
+        'details': {'vessels': 0.80, 'redness': 0.70, 'sensitivity': 0.50},
         'routine': [
-            '☀️ SPF 50+ sunscreen every 2 hours — most important step',
-            '🌟 Apply Vitamin C serum every morning',
-            '💧 Use Alpha Arbutin serum for dark spots',
-            '🍋 Apply retinol at night for cell turnover',
-            '🚫 Never pick or scratch dark spots',
-            '🥗 Eat Vitamin C rich foods daily',
+            '🏥 Consult a dermatologist for evaluation',
+            '☀️ Apply SPF 50+ sunscreen daily',
+            '🚫 Avoid extreme temperatures',
+            '🧴 Use gentle fragrance-free products',
+            '📸 Monitor and document any changes',
         ],
         'medicines': [
-            '💊 Vitamin C 15-20% serum (morning)',
-            '💊 Alpha Arbutin 2% serum',
-            '💊 Kojic Acid cream',
-            '💊 Retinol 0.5% serum (night)',
-        ]
-    },
-    'Fungal Infection': {
-        'description': 'Fungal skin infection detected. Common in humid conditions and caused by fungal overgrowth.',
-        'details': {'fungal': 0.80, 'inflammation': 0.55, 'oil': 0.60},
-        'routine': [
-            '🧴 Use antifungal face wash or soap daily',
-            '💧 Keep skin dry — pat dry after washing',
-            '👕 Wear breathable cotton clothing',
-            '🚿 Shower after sweating immediately',
-            '🚫 Do not share towels or clothing',
-            '💨 Keep affected area ventilated',
-        ],
-        'medicines': [
-            '💊 Ketoconazole 2% face wash or cream',
-            '💊 Clotrimazole 1% cream (apply twice daily)',
-            '💊 Zinc pyrithione soap',
+            '💊 SPF 50+ mineral sunscreen',
+            '💊 Gentle fragrance-free moisturizer',
+            '🏥 Treatment options discussed with doctor',
         ]
     },
 }

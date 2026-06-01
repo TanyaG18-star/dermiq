@@ -16,12 +16,12 @@ CLASS_NAMES = ['MEL', 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']
 
 CLASS_MAP = {
     'MEL'  : 'Melanoma',
-    'NV'   : 'Normal Skin',
-    'BCC'  : 'Acne',
-    'AKIEC': 'Hyperpigmentation',
-    'BKL'  : 'Psoriasis',
-    'DF'   : 'Eczema',
-    'VASC' : 'Rosacea',
+    'NV'   : 'Melanocytic Nevi',
+    'BCC'  : 'Basal Cell Carcinoma',
+    'AKIEC': 'Actinic Keratosis',
+    'BKL'  : 'Benign Keratosis',
+    'DF'   : 'Dermatofibroma',
+    'VASC' : 'Vascular Lesion',
 }
 
 # ─────────────────────────────────────
