@@ -12,23 +12,27 @@ import Reports from './pages/Reports'
 import ProgressTracker from './pages/ProgressTracker'
 import Weather from './pages/Weather'
 import ChatBot from './components/ChatBot'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public pages — anyone can access */}
         <Route path="/"           element={<Landing />} />
         <Route path="/register"   element={<Registration />} />
         <Route path="/login"      element={<Login />} />
-        <Route path="/dashboard"  element={<Dashboard />} />
-        <Route path="/analyze"    element={<AnalyzeSkin />} />
-        <Route path="/processing" element={<Processing />} />
-        <Route path="/result"     element={<Result />} />
-        <Route path="/emergency"  element={<Emergency />} />
-        <Route path="/risk"       element={<RiskScoring />} />
-        <Route path="/reports"    element={<Reports />} />
-        <Route path="/progress"   element={<ProgressTracker />} />
-        <Route path="/weather"    element={<Weather />} />
+
+        {/* Protected pages — login required */}
+        <Route path="/dashboard"  element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/analyze"    element={<ProtectedRoute><AnalyzeSkin /></ProtectedRoute>} />
+        <Route path="/processing" element={<ProtectedRoute><Processing /></ProtectedRoute>} />
+        <Route path="/result"     element={<ProtectedRoute><Result /></ProtectedRoute>} />
+        <Route path="/emergency"  element={<ProtectedRoute><Emergency /></ProtectedRoute>} />
+        <Route path="/risk"       element={<ProtectedRoute><RiskScoring /></ProtectedRoute>} />
+        <Route path="/reports"    element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+        <Route path="/progress"   element={<ProtectedRoute><ProgressTracker /></ProtectedRoute>} />
+        <Route path="/weather"    element={<ProtectedRoute><Weather /></ProtectedRoute>} />
       </Routes>
       <ChatBot />
     </BrowserRouter>
