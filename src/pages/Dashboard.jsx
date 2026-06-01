@@ -15,12 +15,15 @@ function Dashboard() {
     }
   }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem('dermiq_loggedIn')
-    localStorage.removeItem('dermiq_loggedin')
-    navigate('/login')
-  }
-
+  // ✅ Fixed logout — clears everything
+const handleLogout = () => {
+  localStorage.removeItem('dermiq_loggedIn')
+  localStorage.removeItem('dermiq_loggedin')
+  localStorage.removeItem('dermiq_user')      // ✅ remove user data
+  localStorage.removeItem('dermiq_result')    // ✅ remove last analysis
+  localStorage.removeItem('dermiq_image')     // ✅ remove last image
+  navigate('/login')
+}
   const cards = [
     {
       icon: '🔬',
