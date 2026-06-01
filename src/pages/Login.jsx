@@ -2,6 +2,17 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../services/api'
 
+const hashPassword = (password) => {
+  let hash = 0
+  for (let i = 0; i < password.length; i++) {
+    const char = password.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return 'hashed_' + Math.abs(hash).toString(16)
+}
+
+
 function Login() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({ email: '', password: '' })
