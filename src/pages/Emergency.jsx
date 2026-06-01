@@ -73,6 +73,7 @@ function Emergency() {
             <a href={`tel:${doc.phone}`}
               className="block text-center bg-red-500 text-white py-2 rounded-xl hover:bg-red-600 transition font-semibold">
               📞 Call Now
+              
             </a>
           </div>
         ))}
