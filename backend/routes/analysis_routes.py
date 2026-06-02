@@ -125,6 +125,23 @@ ML_CONDITION_MAP = {
             '🏥 Treatment options discussed with doctor',
         ]
     },
+    'Normal Skin': {
+        'description': 'Skin appears healthy with no major conditions detected. Maintain your current routine.',
+        'details': {'acne': 0.10, 'pores': 0.20, 'spot': 0.15},
+        'routine': [
+            '🧴 Maintain basic CTM routine daily',
+            '💧 Moisturize twice daily',
+            '☀️ Apply SPF 30 sunscreen every morning',
+            '💧 Drink 2-3 litres of water daily',
+            '🥗 Eat a balanced diet rich in antioxidants',
+            '😴 Sleep 7-8 hours every night',
+        ],
+        'medicines': [
+            '💊 Basic SPF 30 moisturizer',
+            '💊 Gentle face wash',
+            '💊 Vitamin C serum (optional, for glow)',
+        ]
+    },
 }
 
 
@@ -132,8 +149,8 @@ ML_CONDITION_MAP = {
 # CONTEXT ENGINE (age/gender/city)
 # ─────────────────────────────────────
 def analyze_skin_smart(image_base64, age, gender, city):
-    age    = int(age) if age else 25
-    city   = city.lower() if city else 'unknown'
+    age  = int(age) if age else 25
+    city = city.lower() if city else 'unknown'
 
     if age < 18:       age_group = 'teen'
     elif age < 25:     age_group = 'young_adult'
@@ -141,13 +158,9 @@ def analyze_skin_smart(image_base64, age, gender, city):
     elif age < 50:     age_group = 'middle_age'
     else:              age_group = 'mature'
 
-    severity = 'high' if age_group == 'mature' else 'low'
-
     return {
-        'severity':  severity,
         'age_group': age_group,
     }
-
 
 # ─────────────────────────────────────
 # POST /analyze ← ML POWERED
@@ -183,11 +196,10 @@ def analyze():
         ml_context = ML_CONDITION_MAP.get(condition, ML_CONDITION_MAP['Normal Skin'])
 
         # ── Step 3: Override severity for serious conditions ──
-        if condition in ['Melanoma']:
-            severity = 'high'
+        if condition in ['Melanoma', 'Basal Cell Carcinoma', 'Actinic Keratosis']:
+         severity = 'high'
         else:
-            severity = context['severity']
-
+         severity = 'low'
         return jsonify({
             'success'    : True,
             'condition'  : condition,
